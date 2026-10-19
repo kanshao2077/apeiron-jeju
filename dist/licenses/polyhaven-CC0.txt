@@ -1,0 +1,8 @@
+Sky: Kloofendal 48d Partly Cloudy (Pure Sky)
+https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+Original: Greg Zaal; Sky edits: Jarod Guest.
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+https://polyhaven.com/license
+
+The bundled sky.jpg is a resized derivative of the tonemapped panoramic JPG.

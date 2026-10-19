@@ -1,0 +1,20 @@
+{
+  "name": "apeiron-jeju",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node --check dist/app.js && node --check dist/interaction.js && node --check dist/js/main.js && node --check dist/fallback.js"
+  },
+  "description": "无岸 APEIRON — 以济州岛海色为参照的交互海面与实时体积云。",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kanshao2077/apeiron-jeju.git"
+  },
+  "homepage": "https://apeiron-jeju.kanshao2077.chatgpt.site/",
+  "engines": {
+    "node": ">=18"
+  }
+}

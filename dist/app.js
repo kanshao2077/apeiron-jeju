@@ -1,0 +1,17 @@
+import {createInteraction} from './interaction.js';
+const state=createInteraction(),$=id=>document.getElementById(id);let noticeTimer;
+function notice(text){$('notice').textContent=text;$('notice').classList.add('show');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('show'),2500);}
+function pause(){state.paused=!state.paused;$('pause').setAttribute('aria-label',state.paused?'继续海面':'暂停海面');$('pause').textContent=state.paused?'继续':'暂停';}
+function menu(open=$('settings').hidden){$('settings').hidden=!open;$('menu-toggle').setAttribute('aria-expanded',String(open));$('menu-toggle').setAttribute('aria-label',open?'关闭设置':'打开设置');}
+$('menu-toggle').addEventListener('click',()=>menu());
+addEventListener('pointerdown',e=>{if(!$('settings').hidden&&!e.target.closest('#settings,#menu-toggle'))menu(false);});
+function immerse(value=!document.body.classList.contains('immersed')){document.body.classList.toggle('immersed',value);menu(false);}
+$('pause').addEventListener('click',pause);$('immersive').addEventListener('click',()=>immerse());$('restore').addEventListener('click',()=>immerse(false));
+$('capture').addEventListener('click',()=>{if(document.body.dataset.state!=='ready')return;state.capture=true;notice('正在留住这一刻…');});
+$('wind').addEventListener('input',e=>{state.wind=Number(e.target.value)/100;});$('light').addEventListener('input',e=>{state.light=Number(e.target.value)/100;});
+document.querySelectorAll('[data-theme]').forEach(el=>el.addEventListener('click',()=>{state.theme=el.dataset.theme;document.querySelectorAll('[data-theme]').forEach(b=>{const active=b===el;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});}));
+$('about').addEventListener('click',()=>$('about-dialog').showModal());$('close-about').addEventListener('click',()=>$('about-dialog').close());
+$('about-dialog').addEventListener('click',e=>{if(e.target===$('about-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
+addEventListener('keydown',e=>{if(e.target.matches('input')||$('about-dialog').open)return;if(e.code==='Space'&&e.target.matches('button'))return;if(e.code==='Space'){e.preventDefault();pause();}if(e.code==='KeyH')immerse();if(e.code==='Escape'){immerse(false);menu(false);}});
+document.addEventListener('sea-ready',e=>{document.body.dataset.state='ready';document.body.dataset.renderer=e.detail;});document.addEventListener('sea-saved',()=>notice('已保存这片海'));document.addEventListener('sea-save-failed',()=>notice('保存未完成，请再试一次'));
+async function boot(){try{if(new URLSearchParams(location.search).get('renderer')==='webgl'||!navigator.gpu)throw new Error('Use WebGL renderer');const adapter=await navigator.gpu.requestAdapter();if(!adapter)throw new Error('No WebGPU adapter');const{startOcean}=await import('./js/main.js');await startOcean(state);}catch(error){console.info('Switching to Three.js:',error.message);try{const c=document.createElement('canvas');c.id='c';c.tabIndex=0;c.setAttribute('aria-label','可交互的海面：移动拨光，按住聚光，松开散开');$('c').replaceWith(c);const{startFallback}=await import('./fallback.js');await startFallback(state);}catch(e){console.error(e);document.body.dataset.state='error';$('loading').innerHTML='<p>这片海暂时无法打开</p><p style="font:12px sans-serif;letter-spacing:1px">请使用开启硬件加速的新版 Chrome 或 Safari。</p>';$('loading').style.opacity='1';}}}boot();
